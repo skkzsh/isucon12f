@@ -22,6 +22,7 @@ DROP TABLE IF EXISTS `admin_users`;
 
 
 /* user_presents の index処理*/
+ALTER TABLE user_presents DROP INDEX idx_user_created_deleted;
 ALTER TABLE user_presents ADD INDEX idx_user_created_deleted (user_id, deleted_at, created_at DESC, id);
 
 CREATE TABLE `users` (
