@@ -10,6 +10,7 @@ require (
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/labstack/echo/v4 v4.11.1
 	github.com/pkg/errors v0.9.1
+	github.com/sony/sonyflake v1.2.0
 	golang.org/x/crypto v0.26.0
 	gopkg.in/DataDog/dd-trace-go.v1 v1.70.1
 )
