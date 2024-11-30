@@ -20,7 +20,6 @@ DROP TABLE IF EXISTS `item_masters`;
 DROP TABLE IF EXISTS `version_masters`;
 DROP TABLE IF EXISTS `admin_users`;
 
-
 CREATE TABLE `users` (
   `id` bigint NOT NULL,
   `isu_coin` bigint NOT NULL default 0 comment '所持ISU-COIN',
