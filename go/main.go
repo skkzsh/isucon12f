@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	echotrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/labstack/echo.v4"
+	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 	"gopkg.in/DataDog/dd-trace-go.v1/profiler"
 	"io"
 	"math"
@@ -82,7 +84,17 @@ func main() {
 	}
 	defer profiler.Stop()
 
-	e.Use(middleware.Logger())
+	tracer.Start(
+		tracer.WithService(ServiceName), // DD_SERVICE
+		tracer.WithEnv(DatadogEnv),      // DD_ENV
+		// tracer.WithServiceVersion("abc123"), // DD_VERSION
+		// tracer.WithRuntimeMetrics(), // DD_RUNTIME_METRICS_ENABLED
+	)
+	defer tracer.Stop()
+
+	e.Use(echotrace.Middleware(echotrace.WithServiceName(ServiceName)))
+
+	e.Use(middleware.Logger()) // TODO
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
