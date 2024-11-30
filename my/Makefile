@@ -101,12 +101,12 @@ issue:
 	(cd $(APP_DIR); git rev-parse HEAD; \
 	echo "\`\`\`"; grep SCORE ~/logs/bench-$(DATE).log; echo "\`\`\`"; \
 	echo "<details><summary>Bench</summary>"; echo -e "\n\`\`\`"; cat ~/logs/bench-$(DATE).log; echo "\`\`\`"; echo "</details>"; \
-	echo "<details><summary>Bench error</summary>"; echo -e "\n\`\`\`"; cat ~/logs/bench-error-$(DATE).log; echo "\`\`\`"; echo "</details>"; \
 	echo "<details><summary>alp</summary>"; echo -e "\n\`\`\`"; cat ~/logs/alp-$(DATE).log; echo "\`\`\`";  echo "</details>"; \
     echo "<details><summary>Slow query</summary>"; echo -e "\n\`\`\`"; cat ~/logs/pt-query-digest-$(DATE).log; echo "\`\`\`";  echo "</details>"; \
 	echo "<details><summary>NGINX error</summary>"; echo -e "\n\`\`\`"; sudo cat $(NGINX_ERROR_LOG).log; echo "\`\`\`"; echo "</details>"; \
 	echo "<details><summary>MySQL error</summary>"; echo -e "\n\`\`\`"; sudo cat $(MYSQL_ERROR_LOG).log; echo "\`\`\`";  echo "</details>"; \
 	) | \
 	gh issue comment $(ISSUE) -F-
+	# echo "<details><summary>Bench error</summary>"; echo -e "\n\`\`\`"; cat ~/logs/bench-error-$(DATE).log; echo "\`\`\`"; echo "</details>"; \
 	# echo "<details><summary>App error</summary>"; echo -e "\n\`\`\`"; sudo journalctl -u $(SERVICE_NAME) --since "$$(systemctl show $(SERVICE_NAME) -p ActiveEnterTimestamp | cut -d= -f2)" --no-pager -o json | jq -r .MESSAGE | jq -R 'fromjson? | select(.level == "ERROR")'; echo "\`\`\`"; echo "</details>"; \
     # echo "<details><summary>App error</summary>"; echo -e "\n\`\`\`"; sudo journalctl -u $(SERVICE_NAME) --since "$$(systemctl show $(SERVICE_NAME) -p ActiveEnterTimestamp | cut -d= -f2)" --no-pager -p err ; echo "\`\`\`"; echo "</details>"; \
