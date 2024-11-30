@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"gopkg.in/DataDog/dd-trace-go.v1/profiler"
 	"io"
 	"math"
 	"math/rand"
@@ -43,6 +44,9 @@ const (
 	PresentCountPerPage int = 100
 
 	SQLDirectory string = "../sql/"
+
+	ServiceName = "isuconquest"
+	DatadogEnv  = "isucon12f"
 )
 
 type Handler struct {
@@ -54,6 +58,30 @@ func main() {
 	time.Local = time.FixedZone("Local", 9*60*60)
 
 	e := echo.New()
+
+	var err error
+
+	err = profiler.Start(
+		profiler.WithService(ServiceName), // DD_SERVICE
+		profiler.WithEnv(DatadogEnv),      // DD_ENV
+		// profiler.WithVersion("<APPLICATION_VERSION>"), // DD_VERSION
+		// profiler.WithTags("<KEY1>:<VALUE1>", "<KEY2>:<VALUE2>"),
+		profiler.WithProfileTypes(
+			profiler.CPUProfile,
+			profiler.HeapProfile,
+			// The profiles below are disabled by default to keep overhead
+			// low, but can be enabled as needed.
+
+			// profiler.BlockProfile,
+			// profiler.MutexProfile,
+			// profiler.GoroutineProfile,
+		),
+	)
+	if err != nil {
+		e.Logger.Fatal(err)
+	}
+	defer profiler.Stop()
+
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
