@@ -42,6 +42,7 @@ var (
 	ErrUnauthorized             error = fmt.Errorf("unauthorized user")
 	ErrForbidden                error = fmt.Errorf("forbidden")
 	ErrGeneratePassword         error = fmt.Errorf("failed to password hash") //nolint:deadcode
+	sf                          *sonyflake.Sonyflake
 )
 
 const (
@@ -63,6 +64,11 @@ func main() {
 	time.Local = time.FixedZone("Local", 9*60*60)
 
 	e := echo.New()
+
+	sf = sonyflake.NewSonyflake(sonyflake.Settings{})
+	if sf == nil {
+		e.Logger.Fatal("failed to initialize sonyflake")
+	}
 
 	var err error
 
@@ -1898,11 +1904,6 @@ func noContentResponse(c echo.Context, status int) error {
 
 // generateID ユニークなIDを生成する
 func (h *Handler) generateID() (int64, error) {
-	sf := sonyflake.NewSonyflake(sonyflake.Settings{})
-	if sf == nil {
-		return 0, fmt.Errorf("failed to initialize sonyflake")
-	}
-
 	id, err := sf.NextID()
 	if err != nil {
 		return 0, fmt.Errorf("failed to generate id: %w", err)
