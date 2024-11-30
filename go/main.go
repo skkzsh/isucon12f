@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	sqltrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/database/sql"
+	sqlxtrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/jmoiron/sqlx"
 	echotrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/labstack/echo.v4"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 	"gopkg.in/DataDog/dd-trace-go.v1/profiler"
@@ -160,7 +162,9 @@ func connectDB(batch bool) (*sqlx.DB, error) {
 		"Asia%2FTokyo",
 		batch,
 	)
-	dbx, err := sqlx.Open("mysql", dsn)
+	sqltrace.Register("mysql", &mysql.MySQLDriver{}, sqltrace.WithServiceName(ServiceName))
+	dbx, err := sqlxtrace.Open("mysql", dsn)
+	// dbx, err := sqlx.Open("mysql", dsn)
 	if err != nil {
 		return nil, err
 	}
