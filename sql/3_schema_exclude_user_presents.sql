@@ -172,6 +172,8 @@ CREATE TABLE `user_items` (
   INDEX userid_idx (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
+ALTER TABLE user_items ADD INDEX user_item_idx (user_id, item_id);
+
 CREATE TABLE `user_cards` (
   `id` bigint NOT NULL,
   `user_id` bigint NOT NULL comment 'ユーザID',
