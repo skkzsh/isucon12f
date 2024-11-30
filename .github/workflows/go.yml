@@ -16,7 +16,7 @@ permissions:
 #   cancel-in-progress: true
 
 jobs:
-  make:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,5 +26,5 @@ jobs:
         with:
           go-version-file: 'go/go.mod'
 
-      - run: go build
+      - run: go build -o isuconquest
         working-directory: go

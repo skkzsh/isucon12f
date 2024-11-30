@@ -11,7 +11,7 @@ GIT_DIR   := ~/webapp
 APP_NAME  := isuconquest
 APP_DIR   := $(GIT_DIR)/$(PROG)
 SERVICE_NAME  := $(APP_NAME).$(PROG)
-BUILD_CMD := go build
+BUILD_CMD := go build -o isuconquest
 export ISUXBENCH_TARGET := 127.0.0.1
 BENCH_DIR := ~/
 BENCH_CMD := ./bin/benchmarker --stage=prod --request-timeout=10s --initialize-request-timeout=60s
