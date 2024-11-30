@@ -15,8 +15,7 @@ BUILD_CMD := go build
 export ISUXBENCH_TARGET := 127.0.0.1
 BENCH_DIR := ~/
 BENCH_CMD := ./bin/benchmarker --stage=prod --request-timeout=10s --initialize-request-timeout=60s
-# ALP_MATCH := '^/api/player/player/[0-9a-f]+$$','^/api/player/competition/[0-9a-f]+/ranking$$','^/api/player/competition/[0-9a-f]+/ranking\?rank_after=xxx$$','^/api/organizer/player/[0-9a-f]+/disqualified$$','^/api/organizer/competition/[0-9a-f]+/score$$','^/api/organizer/competition/[0-9a-f]+/finish$$'
-# TODO: ALP_MATCHはAPIの実装やnginxのlogから決める
+ALP_MATCH := '^/user/[0-9]+/gacha/index$$','^/user/[0-9]+/gacha/draw/[0-9]+/[0-9]+$$','^/user/[0-9]+/present/index/[0-9]+$$','^/user/[0-9]+/present/receive$$','^/user/[0-9]+/item$$','/user/[0-9]+/card/addexp/[0-9]+','^/user/[0-9]+/card$$','^/user/[0-9]+/reward$$','^/user/[0-9]+/home$$','^/admin/user/[0-9]+$$','^/admin/user/[0-9]+/ban$$'
 
 ALP_OPTS ?= -q # --qs-ignore-values --limit 10000
 
@@ -104,12 +103,12 @@ issue:
 	echo "\`\`\`"; grep SCORE ~/logs/bench-$(DATE).log; echo "\`\`\`"; \
 	echo "<details><summary>Bench</summary>"; echo -e "\n\`\`\`"; cat ~/logs/bench-$(DATE).log; echo "\`\`\`"; echo "</details>"; \
 	echo "<details><summary>Bench error</summary>"; echo -e "\n\`\`\`"; cat ~/logs/bench-error-$(DATE).log; echo "\`\`\`"; echo "</details>"; \
+	echo "<details><summary>alp</summary>"; echo -e "\n\`\`\`"; cat ~/logs/alp-$(DATE).log; echo "\`\`\`";  echo "</details>"; \
 	echo "<details><summary>NGINX error</summary>"; echo -e "\n\`\`\`"; sudo cat $(NGINX_ERROR_LOG).log; echo "\`\`\`"; echo "</details>"; \
 	echo "<details><summary>MySQL error</summary>"; echo -e "\n\`\`\`"; sudo cat $(MYSQL_ERROR_LOG).log; echo "\`\`\`";  echo "</details>"; \
 	echo "<details><summary>App error</summary>"; echo -e "\n\`\`\`"; sudo journalctl -u $(SERVICE_NAME) --since "$$(systemctl show $(SERVICE_NAME) -p ActiveEnterTimestamp | cut -d= -f2)" --no-pager -o json | jq -r .MESSAGE | jq -R 'fromjson? | select(.level == "ERROR")'; echo "\`\`\`"; echo "</details>"; \
 	) | \
 	gh issue comment $(ISSUE) -F-
     # echo "<details><summary>App error</summary>"; echo -e "\n\`\`\`"; sudo journalctl -u $(SERVICE_NAME) --since "$$(systemctl show $(SERVICE_NAME) -p ActiveEnterTimestamp | cut -d= -f2)" --no-pager -p err ; echo "\`\`\`"; echo "</details>"; \
-	# echo "<details><summary>alp</summary>"; echo -e "\n\`\`\`"; cat ~/logs/alp-$(DATE).log; echo "\`\`\`";  echo "</details>"; \
     # echo "<details><summary>Slow query</summary>"; echo -e "\n\`\`\`"; cat ~/logs/pt-query-digest-$(DATE).log; echo "\`\`\`";  echo "</details>"; \
-    # TODO: alp, slow query
+    # TODO: slow query
