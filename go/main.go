@@ -1176,11 +1176,11 @@ func (h *Handler) drawGacha(c echo.Context) error {
 		}
 	}
 
-	tx, err := h.DB.Beginx()
-	if err != nil {
-		return errorResponse(c, http.StatusInternalServerError, err)
-	}
-	defer tx.Rollback() //nolint:errcheck
+	// tx, err := h.DB.Beginx()
+	// if err != nil {
+	// 	return errorResponse(c, http.StatusInternalServerError, err)
+	// }
+	// defer tx.Rollback() //nolint:errcheck
 
 	// プレゼントにガチャ結果を付与する
 	presents := make([]*UserPresent, 0, gachaCount)
@@ -1208,7 +1208,8 @@ func (h *Handler) drawGacha(c echo.Context) error {
 		presents = append(presents, present)
 	}
 
-	_, err = tx.NamedExec(
+	// _, err = tx.NamedExec(
+	_, err = h.DB.NamedExec(
 		"INSERT INTO user_presents"+
 			" (id, user_id, sent_at, item_type, item_id, amount, present_message, created_at, updated_at)"+
 			" VALUES (:id, :user_id, :sent_at, :item_type, :item_id, :amount, :present_message, :created_at, :updated_at)",
@@ -1219,14 +1220,15 @@ func (h *Handler) drawGacha(c echo.Context) error {
 
 	query = "UPDATE users SET isu_coin=? WHERE id=?"
 	totalCoin := user.IsuCoin - consumedCoin
-	if _, err := tx.Exec(query, totalCoin, user.ID); err != nil {
+	// if _, err := tx.Exec(query, totalCoin, user.ID); err != nil {
+	if _, err := h.DB.Exec(query, totalCoin, user.ID); err != nil {
 		return errorResponse(c, http.StatusInternalServerError, err)
 	}
 
-	err = tx.Commit()
-	if err != nil {
-		return errorResponse(c, http.StatusInternalServerError, err)
-	}
+	// err = tx.Commit()
+	// if err != nil {
+	// 	return errorResponse(c, http.StatusInternalServerError, err)
+	// }
 
 	return successResponse(c, &DrawGachaResponse{
 		Presents: presents,
