@@ -1960,12 +1960,18 @@ func (h *Handler) generateID() (int64, error) {
 
 // generateUUID UUIDの生成
 func generateUUID() (string, error) {
-	id, err := uuid.NewRandom()
-	if err != nil {
+	if id, err := uuid.NewV7(); err == nil {
+		return id.String(), nil
+	} else {
 		return "", err
 	}
 
-	return id.String(), nil
+	// id, err := uuid.NewRandom()
+	// if err != nil {
+	// 	return "", err
+	// }
+
+	// return id.String(), nil
 }
 
 // getUserID path paramからuserIDを取得する
