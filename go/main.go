@@ -551,6 +551,7 @@ func (h *Handler) obtainPresent(tx *sqlx.Tx, userID int64, requestAt int64) ([]*
 	return obtainPresents, nil
 }
 
+// TODO: 高CPU
 // obtainItem アイテム付与処理
 func (h *Handler) obtainItem(tx *sqlx.Tx, userID, itemID int64, itemType int, obtainAmount int64, requestAt int64) ([]int64, []*UserCard, []*UserItem, error) {
 	obtainCoins := make([]int64, 0)
@@ -1259,6 +1260,7 @@ func (h *Handler) listPresent(c echo.Context) error {
 
 	offset := PresentCountPerPage * (n - 1)
 	presentList := []*UserPresent{}
+	// TODO: slow
 	query := `
 	SELECT * FROM user_presents 
 	WHERE user_id = ? AND deleted_at IS NULL
