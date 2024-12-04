@@ -485,10 +485,13 @@ func (h *Handler) obtainPresent(tx *sqlx.Tx, userID int64, requestAt int64) ([]*
 	}
 
 	obtainPresents := make([]*UserPresent, 0)
-	for _, np := range normalPresents {
-		received := new(UserPresentAllReceivedHistory)
-		query = "SELECT * FROM user_present_all_received_history WHERE user_id=? AND present_all_id=?"
-		err := tx.Get(received, query, userID, np.ID)
+	for _, np := range normalPresents { // TODO: N+1
+		// received := new(UserPresentAllReceivedHistory)
+		// query = "SELECT * FROM user_present_all_received_history WHERE user_id=? AND present_all_id=?"
+		var exists int8
+		query = "SELECT 1 FROM user_present_all_received_history WHERE user_id=? AND present_all_id=? LIMIT 1"
+		// err := tx.Get(received, query, userID, np.ID)
+		err := tx.Get(&exists, query, userID, np.ID)
 		if err == nil {
 			// プレゼント配布済
 			continue
@@ -512,7 +515,6 @@ func (h *Handler) obtainPresent(tx *sqlx.Tx, userID int64, requestAt int64) ([]*
 			CreatedAt:      requestAt,
 			UpdatedAt:      requestAt,
 		}
-		// TODO: slow, bulk
 		query = "INSERT INTO user_presents(id, user_id, sent_at, item_type, item_id, amount, present_message, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
 		if _, err := tx.Exec(query, up.ID, up.UserID, up.SentAt, up.ItemType, up.ItemID, up.Amount, up.PresentMessage, up.CreatedAt, up.UpdatedAt); err != nil {
 			return nil, err
