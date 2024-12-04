@@ -1260,7 +1260,7 @@ func (h *Handler) listPresent(c echo.Context) error {
 
 	offset := PresentCountPerPage * (n - 1)
 	presentList := []*UserPresent{}
-	// TODO: slow
+	// TODO: slow (データ量が多い)
 	query := `
 	SELECT * FROM user_presents 
 	WHERE user_id = ? AND deleted_at IS NULL
@@ -1349,7 +1349,8 @@ func (h *Handler) receivePresent(c echo.Context) error {
 		obtainPresentIds = append(obtainPresentIds, obtainPresent[i].ID)
 	}
 
-	query, params, err = sqlx.In("UPDATE user_presents SET deleted_at=?, updated_at=? WHERE id IN (?)", requestAt, requestAt, obtainPresentIds)
+	// query, params, err = sqlx.In("UPDATE user_presents SET deleted_at=?, updated_at=? WHERE id IN (?)", requestAt, requestAt, obtainPresentIds)
+	query, params, err = sqlx.In("DELETE FROM user_presents WHERE id IN (?)", obtainPresentIds)
 	if err != nil {
 		return errorResponse(c, http.StatusInternalServerError, err)
 	}
