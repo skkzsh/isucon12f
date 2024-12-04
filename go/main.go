@@ -1941,7 +1941,7 @@ func (h *Handler) generateID() (int64, error) {
 		return 0, fmt.Errorf("failed to generate id: %w", err)
 	}
 
-	return int64(id), nil
+	return 100000000001 + int64(id), nil
 
 	// var updateErr error
 	// for i := 0; i < 100; i++ {
