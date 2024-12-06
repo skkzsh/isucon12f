@@ -6,6 +6,7 @@ toolchain go1.22.9
 
 require (
 	github.com/go-sql-driver/mysql v1.6.0
+	github.com/goccy/go-json v0.10.3
 	github.com/google/uuid v1.6.0
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/labstack/echo/v4 v4.11.1
