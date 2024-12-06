@@ -479,27 +479,29 @@ func (h *Handler) obtainLoginBonus(tx *sqlx.Tx, userID int64, requestAt int64) (
 // obtainPresent プレゼント付与
 func (h *Handler) obtainPresent(tx *sqlx.Tx, userID int64, requestAt int64) ([]*UserPresent, error) {
 	normalPresents := make([]*PresentAllMaster, 0)
-	query := "SELECT * FROM present_all_masters WHERE registered_start_at <= ? AND registered_end_at >= ?"
-	if err := tx.Select(&normalPresents, query, requestAt, requestAt); err != nil {
+	// query := "SELECT * FROM present_all_masters WHERE registered_start_at <= ? AND registered_end_at >= ?"
+	query := "SELECT * FROM present_all_masters WHERE registered_start_at <= ? AND registered_end_at >= ?" +
+		" AND id IN (SELECT present_all_id FROM user_present_all_received_history WHERE user_id=?)"
+	if err := tx.Select(&normalPresents, query, requestAt, requestAt, userID); err != nil {
 		return nil, err
 	}
 
 	obtainPresents := make([]*UserPresent, 0)
 	histories := make([]*UserPresentAllReceivedHistory, 0)
-	for _, np := range normalPresents { // TODO: N+1
+	for _, np := range normalPresents {
 		// received := new(UserPresentAllReceivedHistory)
 		// query = "SELECT * FROM user_present_all_received_history WHERE user_id=? AND present_all_id=?"
-		var exists int8
-		query = "SELECT 1 FROM user_present_all_received_history WHERE user_id=? AND present_all_id=? LIMIT 1"
+		// var exists int8
+		// query = "SELECT 1 FROM user_present_all_received_history WHERE user_id=? AND present_all_id=? LIMIT 1"
 		// err := tx.Get(received, query, userID, np.ID)
-		err := tx.Get(&exists, query, userID, np.ID)
-		if err == nil {
-			// プレゼント配布済
-			continue
-		}
-		if err != sql.ErrNoRows {
-			return nil, err
-		}
+		//err := tx.Get(&exists, query, userID, np.ID)
+		// if err == nil {
+		// 	// プレゼント配布済
+		// 	continue
+		// }
+		// if err != sql.ErrNoRows {
+		// 	return nil, err
+		// }
 
 		pID, err := h.generateID()
 		if err != nil {
