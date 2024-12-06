@@ -552,7 +552,7 @@ func (h *Handler) obtainPresent(tx *sqlx.Tx, userID int64, requestAt int64) ([]*
 
 	var err error
 	if len(obtainPresents) > 0 {
-		_, err = h.DB.NamedExec(
+		_, err = tx.NamedExec(
 			"INSERT INTO user_presents"+
 				" (id, user_id, sent_at, item_type, item_id, amount, present_message, created_at, updated_at)"+
 				" VALUES (:id, :user_id, :sent_at, :item_type, :item_id, :amount, :present_message, :created_at, :updated_at)",
@@ -563,7 +563,7 @@ func (h *Handler) obtainPresent(tx *sqlx.Tx, userID int64, requestAt int64) ([]*
 	}
 
 	if len(histories) > 0 {
-		_, err = h.DB.NamedExec(
+		_, err = tx.NamedExec(
 			"INSERT INTO user_present_all_received_history"+
 				" (id, user_id, present_all_id, received_at, created_at, updated_at)"+
 				" VALUES (:id, :user_id, :present_all_id, :received_at, :created_at, :updated_at)",
